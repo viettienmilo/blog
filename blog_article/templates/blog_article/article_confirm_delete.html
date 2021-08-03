@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+    Article Create New
+{% endblock %}
+{% block content %}
+    <h2>DELETE ARTICLE</h2>
+    <hr>
+    <div class="content-section">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-11">
+                <form method="POST">
+                    {% csrf_token %}
+                    <p>Are you sure want to <strong>DELETE</strong> this Article? This action cannot be <strong>UNDONE</strong>!</p>
+                    <fieldset class="form-group ms-3 text-warning">
+                        <h4>{{ article.title|upper }}</h4>
+                    </fieldset>
+                    <div class="form-group mt-3">
+                        <a class="btn btn-outline-primary" href="{{ article.get_absolute_url }}">Cancel</a>
+                        <button class="btn btn-outline-danger" type="submit" style="float:right;">Delete Article</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

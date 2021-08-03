@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+    Blogs
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card border-info mb-2">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="{{ article.coverimage.url }}" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-header bg-light article-header-text-lg">
+                            {{ article.title|upper }}
+                        </div>
+                        <div class="card-body">
+                            <span class="card-text"><em class="me-2">Author:</em>{{ article.author }}</span><br>
+                            <span class="card-text"><em class="me-2">Published in:</em>{{ article.date_published|date:'d-m-Y' }}</span><br>
+                            <span class="card-text"><em class="me-2">Update in:</em>{{ article.date_updated|date:'d-m-Y' }}</span><br>
+                            <span class="card-text"><em class="me-2">Category:</em>
+                                <a href="{% url 'blog_article:category_article' article.category.name %}">{{ article.category.name }}</a>
+                            </span><br>
+                            <span class="card-text"><em class="me-2">Tags:</em>
+                                {% for tag in article.tags.all %}
+                                    <a href="{% url 'blog_article:tagged_article' tag.slug %}">{{ tag.name }}</a>
+                                    {% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </span><br>
+                        </div>
+                    </div>
+                    {% if article.author == request.user %}
+                        <div class="d-flex justify-content-end my-2">
+                            <a class="btn btn-sm btn-outline-primary me-2"
+                               href="{% url 'blog_article:article_update' article.date_published.year article.date_published.month article.date_published.day article.slug %}">
+                                Update</a>
+                            <a class="btn btn-sm btn-outline-danger me-2"
+                               href="{% url 'blog_article:article_delete' article.date_published.year article.date_published.month article.date_published.day article.slug %}">
+                                Delete</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card card border-info mb-2">
+                <div class="card-body">
+                    <p class="card-text">{{ article.content|safe }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11 d-flex justify-content-end">
+            <a class="btn btn-sm btn-outline-primary"
+               href="{% url 'sharing:article_share' article.id %}">Share Article</a>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <h6>Similar Articles:</h6>
+            {% for similar_article in similar_articles %}
+                <li><a class="article-header-link" href="{{ article.get_absolute_url }}">{{ similar_article }}</a>
+                    <em>(by {{ similar_article.author }})</em></li>
+            {% empty %}
+                <em>__empty__</em>
+            {% endfor %}
+        </div>
+    </div>
+
+    <hr>
+    <h5>Comments</h5>
+    <hr>
+    {% for comment in article.comment_set.all %}
+        <div class="card card border-info mb-2">
+            <div class="card-header">
+                <span class="card-text"><strong>{{ comment.user.username }}</strong> comment at <em>{{ comment.date_created }}</em></span><br>
+                <span class="card-text">Rating: <strong>{{ comment.rating }}</strong></span>
+                {% if comment.user == request.user %}
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-sm btn-outline-danger" style="float:right" data-bs-toggle="modal" data-bs-target="#CommentDelete">
+                      Delete</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="CommentDelete" tabindex="-1" aria-labelledby="CommentDeleteLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="CommentDeleteLabel">Delete Comment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            Danger: This comment will be deleted permanently.
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <form action="{% url 'blog_article:comment_delete' comment.id %}" method="POST">
+                               {% csrf_token %}
+                               <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                              </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <a class="btn btn-sm btn-outline-success me-2" style="float:right"
+                              href="{% url 'blog_article:comment_update' comment.id %}">Update</a>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ comment.content|safe }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    {% if request.user.is_authenticated %}
+        <div class="container mb-5">
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-11 min-vh-100">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            {{ form|crispy }}
+                        </fieldset>
+                        <div class="form-group d-flex justify-content-end">
+                            <button class="btn btn-outline-primary" type="submit">Post comment</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

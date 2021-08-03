@@ -1,0 +1,14 @@
+<div class="row">
+    <div class="col">
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white"><strong>Latest Articles</strong></div>
+            <div class="card-body">
+                {% for article in latest_articles %}
+                    <li>
+                        <a class="article-header-link" href="{{ article.get_absolute_url }}">{{ article.title }}</a>
+                    </li>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

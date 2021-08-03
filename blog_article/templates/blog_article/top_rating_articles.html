@@ -1,0 +1,15 @@
+<div class="row">
+    <div class="col">
+        <div class="card mb-3">
+            <div class="card-header bg-secondary text-white"><strong>Top-Rating Articles</strong></div>
+            <div class="card-body">
+                {% for article in top_rating_articles %}
+                    <li>
+                        <a class="article-header-link" href="{{ article.0.get_absolute_url }}">
+                            {{ article.0 }}</a> (rating: {{ article.1 }})
+                    </li>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

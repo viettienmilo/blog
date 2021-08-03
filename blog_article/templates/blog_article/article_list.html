@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load simple_tags %}
+{% block title %}
+    Blogs
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            {% for article in articles %}
+                <div class="card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ article.coverimage.url }}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-header">
+                                <a class="article-header-text-lg article-header-link"
+                                   href="{{ article.get_absolute_url }}">{{ article.title|upper }}</a><br>
+                                <span>Category: <a href="{% url 'blog_article:category_article' article.category.name %}">{{ article.category.name }}</a></span><br>
+                                <span>Tags:
+                                    {% for tag in article.tags.all %}
+                                        <a href="{% url 'blog_article:tagged_article' tag.slug %}">{{ tag.name }}</a>
+                                        {% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
+                                </span>
+                                <span class="d-flex justify-content-end"><em class="me-1">Author: </em>
+                                    <a href="{% url 'blog_article:user_article' article.author.username %}">{{ article.author }}</a></span>
+                                <span class="text-muted d-flex justify-content-end"><em class="me-1">Published in: </em>{{ article.date_published|date:'d-m-Y' }}</span>
+                                <span class="card-text text-danger"><em>Rating: <strong>{% average_rating article.comment_set.all %}</strong></em></span>
+
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{{ article.content|safe|truncatewords:50 }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            {% include "blog_article/pagination.html" with page_obj=page_obj %}
+        </div>
+    </div>
+{% endblock %}

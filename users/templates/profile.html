@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}
+    User Profile
+{% endblock %}
+{% block content %}
+    <h3>USER PROFILE</h3>
+    <hr>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card border-secondary mb-3">
+                <div class="row">
+                    <div class="col-md-3 ps-4 my-auto">
+                        <img src="{{ request.user.avatar.url }}" class="img-thumbnail rounded-circle"
+                             style="width: 150px; height: auto" alt="...">
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-header bg-info"><h4>{{ request.user.username|upper }}</h4></div>
+                        <div class="card-body">
+                            <span class="card-text">Email: {{ request.user.email }}</span><br>
+                            <span class="card-text">Full Name:
+                                {% if request.user.first_name and request.user.last_name %}
+                                    {{ request.user.first_name }}, {{ request.user.last_name }}
+                                {% else %}
+                                    <em>--empty--</em>
+                                {% endif %}
+                            </span><br>
+                            <em class="card-text text-muted">Joined in: {{ request.user.date_joined }}</em><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card border-secondary mb-3">
+                <div class="card-header bg-secondary">
+                    <a class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse"
+                       href="#collapseGroupsPermissions" role="button" aria-expanded="false"
+                       aria-controls="collapseGroupsPermissions">
+                        <strong>Groups/Permissions</strong>
+                    </a>
+                </div>
+                <div class="collapse" id="collapseGroupsPermissions">
+                    <div class="card card-body">
+                        <h6 class="card-text">Groups:</h6>
+                        <ul>
+                            {% for group in request.user.groups.all %}
+                                <li>{{ group }}</li>
+                            {% empty %}
+                                <li><em>Does not belong to any groups</em></li>
+                            {% endfor %}
+                        </ul>
+                        <h6 class="card-text">Group Permissions:</h6>
+                        <ul>
+                            {% for perm in group_permissions %}
+                                <li>{{ perm }}</li>
+                            {% empty %}
+                                <li><em>Having no permissions</em></li>
+                            {% endfor %}
+                        </ul>
+                        <h6 class="card-text">Individual Permissions:</h6>
+                        <ul>
+                            {% for perm in user_permissions %}
+                                <li>{{ perm }}</li>
+                            {% empty %}
+                                <li><em>Having no permissions</em></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card border-secondary mb-3">
+                <div class="card-header bg-secondary">
+                    <a class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse"
+                       href="#collapseUpdateUser" role="button" aria-expanded="false"
+                       aria-controls="collapseUpdateUser">
+                        <strong>Update Profile</strong>
+                    </a>
+                </div>
+                <div class="collapse" id="collapseUpdateUser">
+                    <div class="card card-body">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <fieldset class="form-group">
+                                {{ form|crispy }}
+                            </fieldset>
+                            <div class="form-group d-flex justify-content-end">
+                                <button class="btn btn-sm btn-outline-primary" type="submit">Save Profile</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card border-secondary mb-3">
+                <div class="card-header bg-secondary">
+                    <a class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse"
+                       href="#collapseUtilities" role="button" aria-expanded="false"
+                       aria-controls="collapseUtilities">
+                        <strong>Utilities</strong>
+                    </a>
+                </div>
+                <div class="collapse" id="collapseUtilities">
+                    <div class="card card-body">
+                         <p class="card-text">
+                             <a href="{% url 'users:password_change' %}" class="btn btn-sm btn-outline-info">Change Password</a>
+                         </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-11">
+            <div class="card border-secondary mb-3">
+                <div class="card-header bg-secondary">
+                    <a class="btn btn-sm btn-outline-warning" data-bs-toggle="collapse"
+                       href="#collapsePublishedArticles" role="button" aria-expanded="false"
+                       aria-controls="collapsePublishedArticles">
+                        <strong>Published Articles</strong>
+                    </a>
+                    <a class="btn btn-sm btn-outline-warning ms-2" data-bs-toggle="collapse"
+                       href="#collapseDraftArticles" role="button" aria-expanded="false"
+                       aria-controls="collapseDraftArticles">
+                        <strong>Draft Articles</strong>
+                    </a>
+                </div>
+                <div class="collapse" id="collapsePublishedArticles">
+                    <div class="card card-body">
+                        <p class="card-text h6">Published Articles</p>
+                        <p class="card-text">
+                            {% for article in published_articles %}
+                                <li><a class="article-header-link"
+                                       href="{{ article.get_absolute_url }}">{{ article.title|default:'__empty__' }}</a></li>
+                            {% endfor %}
+                        </p>
+                    </div>
+                </div>
+                <div class="collapse" id="collapseDraftArticles">
+                    <div class="card card-body">
+                        <p class="card-text h6">Draft Articles</p>
+                        <p class="card-text">
+                        {% for article in draft_articles %}
+                            <li><a class="article-header-link"
+                                   href="{{ article.get_absolute_url }}">{{ article.title|default:'__empty__' }}</a></li>
+                        {% endfor %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

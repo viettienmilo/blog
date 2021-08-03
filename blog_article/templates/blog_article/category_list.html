@@ -1,0 +1,4 @@
+{% for cat in categories %}
+    <li><a class="dropdown-item" href="{% url 'blog_article:category_article' cat.name %}">{{ cat.name }}</a></li>
+    {% if not forloop.last %}<li><hr class="dropdown-divider"></li>{% endif %}
+{% endfor %}

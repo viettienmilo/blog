@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h5>Update Comment</h5>
+    <hr>
+    <div class="container mb-3">
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-11">
+                <form method="POST">
+                    <div class="form-group d-flex justify-content-end">
+                        <button class="btn btn-sm btn-outline-success" type="submit">Update</button>
+                    </div>
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+                        {{ form|crispy }}
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

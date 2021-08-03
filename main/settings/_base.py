@@ -15,10 +15,12 @@ import os
 
 from django.core.exceptions import ImproperlyConfigured
 
+from main.core.utils import set_filename_lower
+
 
 def get_secret(key):
     try:
-        return os.environ(key)
+        return os.environ.get(key)
     except KeyError:
         err_msg = f'Set the {key} environment variable'
         raise ImproperlyConfigured(err_msg)
@@ -34,12 +36,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Application definition
 
 INSTALLED_APPS = [
+    'blog_article.apps.BlogArticleConfig',
+    'users.apps.UsersConfig',
+    'sharing.apps.SharingConfig',
+    'ckeditor',
+    'ckeditor_uploader',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'taggit',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
@@ -76,12 +87,7 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
 
 
 # Password validation
@@ -134,3 +140,36 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'main', 'static'), ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+AUTH_USER_MODEL = 'users.User'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+LOGIN_REDIRECT_URL = 'blog_article:article_list'
+LOGIN_URL = 'users:login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = get_secret('EMAIL_USERNAME')
+EMAIL_HOST_PASSWORD = get_secret('EMAIL_PASSWORD')
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_FILENAME_GENERATOR = 'set_filename_lower'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_CONFIGS = {
+        'default': {
+                'toolbar': 'full',
+                'width': '100%'
+            },
+        'ckeditor_basic': {
+                'toolbar': 'Basic',
+                'width': '100%',
+                'height': '50%',
+        }
+}
+CKEDITOR_BROWSE_SHOW_DIRS = True
+CKEDITOR_RESTRICT_BY_DATE = True
