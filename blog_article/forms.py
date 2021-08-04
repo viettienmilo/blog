@@ -2,9 +2,18 @@ from django import forms
 
 from .models import Comment
 
+RATING_CHOICES = (
+		('0', '☆☆☆☆☆'),
+		('1', '★☆☆☆☆'),
+		('2', '★★☆☆☆'),
+		('3', '★★★☆☆'),
+		('4', '★★★★☆'),
+		('5', '★★★★★'),
+)
+
 
 class CommentForm(forms.ModelForm):
-	rating = forms.IntegerField(min_value=1, max_value=5, initial=5)
+	rating = forms.ChoiceField(choices=RATING_CHOICES, initial=RATING_CHOICES[3])
 
 	class Meta:
 		model = Comment

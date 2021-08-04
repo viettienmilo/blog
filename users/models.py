@@ -21,4 +21,4 @@ class User(AbstractUser):
 		if img.width > 150 or img.height > 150:
 			output_size = (150, 150)
 			img.thumbnail(output_size)
-			img.save(self.avatar.path)
+		img.save(self.avatar.path)

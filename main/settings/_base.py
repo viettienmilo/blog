@@ -163,13 +163,8 @@ CKEDITOR_IMAGE_BACKEND = 'pillow'
 CKEDITOR_CONFIGS = {
         'default': {
                 'toolbar': 'full',
-                'width': '100%'
-            },
-        'ckeditor_basic': {
-                'toolbar': 'Basic',
                 'width': '100%',
-                'height': '50%',
+            },
         }
-}
 CKEDITOR_BROWSE_SHOW_DIRS = True
 CKEDITOR_RESTRICT_BY_DATE = True

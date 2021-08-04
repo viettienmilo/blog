@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
+{% load crispy_forms_field %}
+{% load simple_tags %}
 {% block title %}
     Blogs
 {% endblock %}
@@ -29,6 +31,7 @@
                                     {% if not forloop.last %}, {% endif %}
                                 {% endfor %}
                             </span><br>
+                            <span class="card-text"><em>Rating:  </em><strong style="color: goldenrod; font-size: 20px;">{% average_rating article.comment_set.all %}</strong></span><br>
                         </div>
                     </div>
                     {% if article.author == request.user %}
@@ -54,6 +57,7 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-1"></div>
     </div>
     <div class="row">
         <div class="col-md-1"></div>
@@ -61,6 +65,7 @@
             <a class="btn btn-sm btn-outline-primary"
                href="{% url 'sharing:article_share' article.id %}">Share Article</a>
         </div>
+        <div class="col-md-1"></div>
     </div>
     <div class="row mt-2">
         <div class="col-md-1"></div>
@@ -73,8 +78,8 @@
                 <em>__empty__</em>
             {% endfor %}
         </div>
+        <div class="col-md-1"></div>
     </div>
-
     <hr>
     <h5>Comments</h5>
     <hr>
@@ -82,7 +87,7 @@
         <div class="card card border-info mb-2">
             <div class="card-header">
                 <span class="card-text"><strong>{{ comment.user.username }}</strong> comment at <em>{{ comment.date_created }}</em></span><br>
-                <span class="card-text">Rating: <strong>{{ comment.rating }}</strong></span>
+                <span class="card-text">Rating: <strong style="color: goldenrod; font-size: 20px;">{% star_rating comment.rating %}</strong></span>
                 {% if comment.user == request.user %}
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-sm btn-outline-danger" style="float:right" data-bs-toggle="modal" data-bs-target="#CommentDelete">
@@ -116,23 +121,33 @@
                 <p class="card-text">{{ comment.content|safe }}</p>
             </div>
         </div>
+    {% empty %}
+        <em>__empty__</em>
     {% endfor %}
+    <hr>
+    <h5>New Comment</h5>
+    <hr>
     {% if request.user.is_authenticated %}
-        <div class="container mb-5">
-            <div class="row">
-                <div class="col-md-1"></div>
-                <div class="col-md-11 min-vh-100">
-                    <form method="POST">
-                        {% csrf_token %}
-                        <fieldset class="form-group">
-                            {{ form|crispy }}
-                        </fieldset>
-                        <div class="form-group d-flex justify-content-end">
-                            <button class="btn btn-outline-primary" type="submit">Post comment</button>
-                        </div>
-                    </form>
-                </div>
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-11 mb-5">
+                <form method="POST">
+                    {% csrf_token %}
+                    <fieldset>
+                        {{ form.media }}
+{#                        {{ form|crispy }}#}
+                        <label class="form-label" for="{{ form.content.id_for_label }}">{{ form.content.label }}*</label>
+                        {% crispy_field form.content 'class' 'form-control-input' %}
+                        <p class="mb-2>"></p>
+                        <label class="form-label me-3" for="{{ form.rating.id_for_label }}">{{ form.rating.label }}*</label>
+                        {% crispy_field form.rating 'class' 'form-control-input' 'style' "color: goldenrod;" %}
+                    </fieldset>
+                    <div class="form-group d-flex justify-content-end">
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Post comment</button>
+                    </div>
+                </form>
             </div>
         </div>
+
     {% endif %}
 {% endblock %}
